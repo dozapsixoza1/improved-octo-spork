@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azistance | Чат-менеджер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5181b8;
+            --accent: #00d2ff;
+            --bg: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон */
+        .bg-animate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        /* Header */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(15,23,42,0) 0%, rgba(15,23,42,1) 100%);
+        }
+
+        .logo-area h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #5181b8, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInDown 1s ease;
+        }
+
+        .logo-area p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        .main-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 1s ease 0.4s backwards;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 20px rgba(81, 129, 184, 0.3);
+        }
+
+        .btn-support {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            filter: brightness(1.2);
+        }
+
+        /* Content Section */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+
+        /* Navigation Tabs */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Commands Grid */
+        .commands-container {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .commands-container.active {
+            display: grid;
+        }
+
+        .cmd-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .cmd-card:hover {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .cmd-name {
+            color: var(--accent);
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .cmd-desc {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Info Banner */
+        .info-box {
+            background: linear-gradient(135deg, rgba(81, 129, 184, 0.2), rgba(0, 210, 255, 0.1));
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-box h3 { margin-bottom: 15px; color: var(--accent); }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            background: #334155;
+        }
+
+        @media (max-width: 768px) {
+            .logo-area h1 { font-size: 2.5rem; }
+            .tabs-nav { top: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-animate"></div>
+
+    <header>
+        <div class="logo-area">
+            <h1>Azistance</h1>
+            <p>Умный и функциональный чат-менеджер для вашей конференции ВКонтакте.</p>
+        </div>
+        <div class="main-buttons">
+            <a href="https://vk.ru/app6441755_-235436178?ref=group_menu" class="btn btn-add">Добавить в чат</a>
+            <a href="https://vk.ru/azistance" class="btn btn-support">Тех. поддержка</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="info-box">
+            <h3>📖 Как начать?</h3>
+            <p>1. Добавьте бота в беседу.<br>
+            2. Выдайте <b>права администратора</b>.<br>
+            3. Введите команду <b>/start</b> для активации.<br>
+            Для детальной настройки используйте <b>/settings</b>.</p>
+            <p style="margin-top:15px; font-size: 0.85rem; color: #94a3b8;">
+                * Обязательные аргументы: [квадратные скобки]. Опциональные: (обычные).
+            </p>
+        </div>
+
+        <h2 class="section-title">Команды бота</h2>
+
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="showTab('user')">Пользователь</button>
+            <button class="tab-btn" onclick="showTab('moder')">Модератор</button>
+            <button class="tab-btn" onclick="showTab('admin')">Админ</button>
+            <button class="tab-btn" onclick="showTab('spec')">Спец. Админ</button>
+            <button class="tab-btn" onclick="showTab('lead')">Руководитель</button>
+            <button class="tab-btn" onclick="showTab('owner')">Владелец</button>
+            <button class="tab-btn" onclick="showTab('game')">Игры</button>
+            <button class="tab-btn" onclick="showTab('vip')">VIP</button>
+        </div>
+
+        <div id="user" class="commands-container active">
+            <div class="cmd-card"><span class="cmd-name">/staff</span><span class="cmd-desc">Список руководителей беседы.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/help</span><span class="cmd-desc">Список доступных команд.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/ping</span><span class="cmd-desc">Проверить отклик бота.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/report [текст]</span><span class="cmd-desc">Сообщить о баге или задать вопрос.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/stats</span><span class="cmd-desc">Информация о вашей статистике.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/rules</span><span class="cmd-desc">Правила конференции.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/online</span><span class="cmd-desc">Список активных участников.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/q</span><span class="cmd-desc">Покинуть конференцию.</span></div>
+        </div>
+
+        <div id="moder" class="commands-container">
+            <div class="cmd-card"><span class="cmd-name">/warn [ID] (причина)</span><span class="cmd-desc">Выдать предупреждение.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/mute [ID] [мин]</span><span class="cmd-desc">Запретить писать в чат.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/kick [ID]</span><span class="cmd-desc">Исключить участника.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/setnick [ID] [ник]</span><span class="cmd-desc">Установить никнейм.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/zov [текст]</span><span class="cmd-desc">Упомянуть всех участников.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/banlist</span><span class="cmd-desc">Список заблокированных.</span></div>
+        </div>
+
+        <div id="admin" class="commands-container">
+            <div class="cmd-card"><span class="cmd-name">/setrole [ID] [роль]</span><span class="cmd-desc">Выдать роль пользователю.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/ban [ID] (дни)</span><span class="cmd-desc">Заблокировать в чате.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/silence</span><span class="cmd-desc">Вкл/Выкл режим тишины.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/delete</span><span class="cmd-desc">Удалить сообщение (пересланное).</span></div>
+            <div class="cmd-card"><span class="cmd-name">/logs</span><span class="cmd-desc">Логи действий в чате.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/addmoder [ID]</span><span class="cmd-desc">Назначить модератора.</span></div>
+        </div>
+
+        <div id="spec" class="commands-container">
+            <div class="cmd-card"><span class="cmd-name">/filter [add/del]</span><span class="cmd-desc">Управление запрещенными словами.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/settings</span><span class="cmd-desc">Настройки конфигурации бота.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/pin</span><span class="cmd-desc">Закрепить сообщение.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/приветствие [текст]</span><span class="cmd-desc">Установить приветствие новых.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/log</span><span class="cmd-desc">Подробные логи юзера.</span></div>
+        </div>
+
+        <div id="lead" class="commands-container">
+            <div class="cmd-card"><span class="cmd-name">/newrole [приор] [имя]</span><span class="cmd-desc">Создать свою роль.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/newrules [текст]</span><span class="cmd-desc">Обновить правила чата.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/addspec [ID]</span><span class="cmd-desc">Назначить Спец. Админа.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/pullinfo</span><span class="cmd-desc">Инфо об объединении.</span></div>
+        </div>
+
+        <div id="owner" class="commands-container">
+            <div class="cmd-card"><span class="cmd-name">/editcmd [команда] [приор]</span><span class="cmd-desc">Изменить доступ к команде.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/wipe [тип]</span><span class="cmd-desc">Полная очистка данных (баны/варны).</span></div>
+            <div class="cmd-card"><span class="cmd-name">/masskick</span><span class="cmd-desc">Исключить всех из чата.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/editowner [ID]</span><span class="cmd-desc">Передать права владельца.</span></div>
+        </div>
+
+        <div id="game" class="commands-container">
+            <div class="cmd-card"><span class="cmd-name">/marriage [ID]</span><span class="cmd-desc">Предложение руки и сердца.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/job / sell</span><span class="cmd-desc">Работа и продажа ресурсов.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/balance</span><span class="cmd-desc">Ваш кошелек.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/shop</span><span class="cmd-desc">Магазин домов и машин.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/roulette</span><span class="cmd-desc">Испытать удачу.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/profile</span><span class="cmd-desc">Ваш игровой профиль.</span></div>
+        </div>
+
+        <div id="vip" class="commands-container">
+            <div class="cmd-card"><span class="cmd-name">/ai [вопрос]</span><span class="cmd-desc">Задать вопрос нейросети.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/vl [текст]</span><span class="cmd-desc">Сообщение от имени бота.</span></div>
+            <div class="cmd-card"><span class="cmd-name">/me</span><span class="cmd-desc">Действие от 1-го лица.</span></div>
+            <div class="cmd-card"><span class="cmd-name">Бонус x1.5</span><span class="cmd-desc">Увеличенные ежедневные награды.</span></div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Azistance | Создано для комфортного общения</p>
+    </footer>
+
+    <script>
+        function showTab(tabId) {
+            // Убираем активный класс у всех кнопок
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Убираем активный класс у всех контейнеров
+            document.querySelectorAll('.commands-container').forEach(cont => {
+                cont.classList.remove('active');
+            });
+
+            // Добавляем активный класс нужной кнопке и контейнеру
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+
+            // Плавная прокрутка к началу команд на мобилках
+            if(window.innerWidth < 768) {
+                window.scrollTo({
+                    top: document.querySelector('.tabs-nav').offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Добавим немного частиц на фон
+        const bg = document.querySelector('.bg-animate');
+        for (let i = 0; i < 20; i++) {
+            const dot = document.createElement('div');
+            dot.style.position = 'absolute';
+            dot.style.width = Math.random() * 5 + 'px';
+            dot.style.height = dot.style.width;
+            dot.style.background = 'rgba(81, 129, 184, 0.3)';
+            dot.style.borderRadius = '50%';
+            dot.style.top = Math.random() * 100 + '%';
+            dot.style.left = Math.random() * 100 + '%';
+            dot.style.filter = 'blur(2px)';
+            bg.appendChild(dot);
+        }
+    </script>
+</body>
+</html>
